@@ -5,6 +5,7 @@ import java.util.Date;
 import cabral.ignacio.enumeradores.TipoOperacion;
 import cabral.ignacio.excepciones.CodigoAlarmaIncorrectoException;
 import cabral.ignacio.excepciones.SensorDuplicadoException;
+import cabral.ignacio.excepciones.SensorNoEncontradoEnAlarmaException;
 import cabral.ignacio.interfaces.Activable;
 import cabral.ignacio.interfaces.Configurable;
 
@@ -36,22 +37,41 @@ public class Administrador extends Usuario implements Configurable, Activable {
 	}
 
 	@Override
-	public void agregarSensorAAlarma(Alarma alarma, String string, Usuario usuario, Sensor sensor)
-			throws SensorDuplicadoException {
-		if (!(alarma.getSensores().add(sensor))) {
-			throw new SensorDuplicadoException("Ya existe este sensor en esta alarma");
+	public void agregarSensorAAlarma(Alarma alarma, Usuario usuario, String codigoConfiguracion, Sensor sensor)
+			throws SensorDuplicadoException, CodigoAlarmaIncorrectoException {
+
+		if (alarma.getCodigoConfiguracion().equals(codigoConfiguracion)) {
+			if (!(alarma.getSensores().add(sensor))) {
+				throw new SensorDuplicadoException("Ya existe este sensor en esta alarma");
+			} else {
+				alarma.getAccionesRealizadas().add(new Accion(usuario, new Date(), TipoOperacion.CONFIGURACION));
+			}
 		} else {
-			alarma.getAccionesRealizadas().add(new Accion(usuario, new Date(), TipoOperacion.CONFIGURACION));
+			throw new CodigoAlarmaIncorrectoException("Codigo de configuración incorrecto");
 		}
+
 	}
 
 	@Override
-	public void activarSensorDeAlarma() {
+	public void activarSensorDeAlarma(Alarma alarma, Usuario usuario, String codigoConfiguracion, Sensor sensor)
+			throws SensorNoEncontradoEnAlarmaException, CodigoAlarmaIncorrectoException {
+		if (alarma.getCodigoConfiguracion().equals(codigoConfiguracion)) {
+			if(alarma.getSensores().contains(sensor)) {
+				sensor.setEstado(Boolean.TRUE);
+				alarma.getAccionesRealizadas().add(new Accion(usuario, new Date(), TipoOperacion.CONFIGURACION));
+			} else {
+				throw new SensorNoEncontradoEnAlarmaException("El sensor que quiere activar no se encuentra en esta alarma");
+			}
+		} else {
+			throw new CodigoAlarmaIncorrectoException("Codigo de configuración incorrecto");
+		}
+		
 	}
 
 	@Override
-	public void activarDesactivar() {
-
+	public void activarDesactivar(Alarma alarma, Usuario usuario, String codigoConfiguracion) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

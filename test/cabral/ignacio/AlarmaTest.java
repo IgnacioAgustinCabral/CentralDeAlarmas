@@ -3,12 +3,15 @@ package cabral.ignacio;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
 import cabral.ignacio.enumeradores.TipoOperacion;
 import cabral.ignacio.excepciones.CodigoAlarmaIncorrectoException;
 import cabral.ignacio.excepciones.SensorDuplicadoException;
+import cabral.ignacio.excepciones.SensorNoEncontradoEnAlarmaException;
 
 public class AlarmaTest {
 	Integer idAlarma = 320;
@@ -47,49 +50,33 @@ public class AlarmaTest {
 
 	}
 
-	@Test
+	@Test(expected = CodigoAlarmaIncorrectoException.class)
 	public void alAgregarUnUsuarioAUnaAlarmaConCodigoDeConfiguracionDeAlarmaInvalidoSeLanceCodigoAlarmaIncorrectoException()
-			/*throws CodigoAlarmaIncorrectoException */{
+			throws CodigoAlarmaIncorrectoException {
 		Central central = new Central();
 
 		Usuario admin = new Administrador(123, "Pedro");
 
 		Usuario configurador = new Configurador(456, "Juan");
 
+		Usuario activador = new Activador(122, "Luis");
+
 		Alarma alarma = new Alarma(idAlarma, codigoActDesact, codigoConfiguracion, nombre);
-		Alarma alarma2 = new Alarma(2, "asd", "zzz", "alarma cocina");
 
 		((Administrador) admin).agregarAlarma(central, alarma);
 
-		try {
-			((Administrador) admin).agregarUsuarioAUnaAlarma(alarma, configurador, "qwerty123");
-		} catch (CodigoAlarmaIncorrectoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		try {
-			((Administrador) admin).agregarUsuarioAUnaAlarma(alarma2, configurador, "zzz");
-		} catch (CodigoAlarmaIncorrectoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		for (Accion acc: alarma.getAccionesRealizadas()) {
-			System.out.println(acc.getId());
-		}
+		((Administrador) admin).agregarUsuarioAUnaAlarma(alarma, configurador, "qwerty123");
 
+		((Administrador) admin).agregarUsuarioAUnaAlarma(alarma, activador, "qwerty321");
 	}
 
 	@Test(expected = SensorDuplicadoException.class)
 	public void alAgregarUnSensorDuplicadoEnUnaAlarmaSeLanceUnaSensorDuplicadoException()
-			throws SensorDuplicadoException {
+			throws SensorDuplicadoException, CodigoAlarmaIncorrectoException {
 
 		Central central = new Central();
 
 		Usuario admin = new Administrador(123, "Pedro");
-
-		Usuario configurador = new Configurador(456, "Juan");
 
 		Alarma alarma = new Alarma(idAlarma, codigoActDesact, codigoConfiguracion, nombre);
 
@@ -97,31 +84,129 @@ public class AlarmaTest {
 		Sensor sensor1 = new Sensor(id);
 		Sensor sensor2 = new Sensor(id);
 
-		((Administrador) admin).agregarSensorAAlarma(alarma, "qwerty123", configurador,sensor1);
-		((Administrador) admin).agregarSensorAAlarma(alarma, "qwerty123", configurador,sensor1);
+		((Administrador) admin).agregarSensorAAlarma(alarma, admin, "qwerty123", sensor1);
+		((Administrador) admin).agregarSensorAAlarma(alarma, admin, "qwerty123", sensor2);
 
 	}
-	
-//	@Test
-//	public void queSePuedanActivarODesactivarSensores() {
-//		
-//		Central central = new Central();
-//
-//		Usuario admin = new Administrador(123, "Pedro");
-//
-//		Usuario configurador = new Configurador(456, "Juan");
-//
-//		Alarma alarma = new Alarma(idAlarma, codigoActDesact, codigoConfiguracion, nombre);
-//	}
-	
+
 	@Test
-	public void asd() {
-		Usuario configurador = new Configurador(456, "Juan");
-		
-		
-		for (int i = 0; i < 10; i++) {
-			Accion acc = new Accion(configurador, new Date(), TipoOperacion.CONFIGURACION);
-			System.out.println(acc.getId());
+	public void queSePuedanActivarSensores() {
+
+		Central central = new Central();
+
+		Usuario admin = new Administrador(123, "Pedro");
+
+		Alarma alarma = new Alarma(idAlarma, codigoActDesact, codigoConfiguracion, nombre);
+
+		Integer id = 3333;
+		Sensor sensor1 = new Sensor(id);
+
+		try {
+			((Administrador) admin).agregarSensorAAlarma(alarma, admin, "qwerty123", sensor1);
+		} catch (SensorDuplicadoException e) {
+			e.printStackTrace();
+		} catch (CodigoAlarmaIncorrectoException e) {
+			e.printStackTrace();
 		}
+
+		try {
+			((Administrador) admin).activarSensorDeAlarma(alarma, admin, "qwerty123", sensor1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		assertTrue(sensor1.getEstado());
+
+	}
+
+	@Test(expected = SensorNoEncontradoEnAlarmaException.class)
+	public void queAlQuererActivarUnSensorQueNoSeEncuentraEnLaAlarmaLanceSensorNoEncontradoEnAlarmaException()
+			throws SensorNoEncontradoEnAlarmaException, CodigoAlarmaIncorrectoException {
+
+		Central central = new Central();
+
+		Usuario admin = new Administrador(123, "Pedro");
+
+		Alarma alarma = new Alarma(idAlarma, codigoActDesact, codigoConfiguracion, nombre);
+
+		Integer id = 3333;
+		Sensor sensor1 = new Sensor(id);
+		Sensor sensor2 = new Sensor(id + 1);
+
+		try {
+			((Administrador) admin).agregarSensorAAlarma(alarma, admin, "qwerty123", sensor1);
+		} catch (SensorDuplicadoException e) {
+			e.printStackTrace();
+		} catch (CodigoAlarmaIncorrectoException e) {
+			e.printStackTrace();
+		}
+
+		((Administrador) admin).activarSensorDeAlarma(alarma, admin, "qwerty123", sensor2);
+
+	}
+
+	@Test
+	public void queNoSePuedaActivarUnaAlarmaSiHayAlMenosUnSensorDesactivado() {
+
+		Central central = new Central();
+
+		Usuario configurador = new Configurador(456, "Juan");
+
+		Usuario activador = new Activador(122, "Luis");
+
+		Alarma alarma = new Alarma(idAlarma, codigoActDesact, codigoConfiguracion, nombre);
+
+		Integer id = 3333;
+		Sensor sensor1 = new Sensor(id);
+		Sensor sensor2 = new Sensor(id + 1);
+
+		try {
+			((Configurador) configurador).agregarUsuarioAUnaAlarma(alarma, activador, codigoConfiguracion);
+		} catch (CodigoAlarmaIncorrectoException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			((Configurador) configurador).agregarSensorAAlarma(alarma, configurador, "qwerty123", sensor1);
+		} catch (SensorDuplicadoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CodigoAlarmaIncorrectoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			((Configurador) configurador).agregarSensorAAlarma(alarma, configurador, "qwerty123", sensor2);
+		} catch (SensorDuplicadoException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (CodigoAlarmaIncorrectoException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try {
+			((Configurador) configurador).activarSensorDeAlarma(alarma, configurador, codigoActDesact, sensor1);
+		} catch (SensorNoEncontradoEnAlarmaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CodigoAlarmaIncorrectoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+//		((Configurador) configurador).activarSensorDeAlarma(alarma, configurador, codigoActDesact, sensor2);
+
+		try {
+			((Activador) activador).activarDesactivar(alarma, activador, codigoConfiguracion);
+		} catch (CodigoAlarmaIncorrectoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		
+		assertFalse(alarma.getActivadaDesactivada());
 	}
 }

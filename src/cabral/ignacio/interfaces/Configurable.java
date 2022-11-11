@@ -6,14 +6,16 @@ import cabral.ignacio.Sensor;
 import cabral.ignacio.Usuario;
 import cabral.ignacio.excepciones.CodigoAlarmaIncorrectoException;
 import cabral.ignacio.excepciones.SensorDuplicadoException;
+import cabral.ignacio.excepciones.SensorNoEncontradoEnAlarmaException;
 
 public interface Configurable {
-
-	public void activarSensorDeAlarma();
 
 	public void agregarUsuarioAUnaAlarma(Alarma alarma, Usuario usuario, String codigoConfiguracion)
 			throws CodigoAlarmaIncorrectoException;
 
-	public void agregarSensorAAlarma(Alarma alarma, String string, Usuario usuario, Sensor sensor)
-			throws SensorDuplicadoException;
+	public void agregarSensorAAlarma(Alarma alarma, Usuario usuario,String codigoConfiguracion,  Sensor sensor)
+			throws SensorDuplicadoException, CodigoAlarmaIncorrectoException;
+
+	public void activarSensorDeAlarma(Alarma alarma, Usuario usuario, String codigoConfiguracion, Sensor sensor)
+			throws SensorNoEncontradoEnAlarmaException, CodigoAlarmaIncorrectoException;
 }

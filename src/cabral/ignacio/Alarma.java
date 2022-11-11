@@ -12,6 +12,7 @@ public class Alarma {
 	private String codigoActDesact;
 	private String codigoConfiguracion;
 	private String nombre;
+	private Boolean activadaDesactivada;
 	private Set<Usuario> usuariosValidos = new HashSet<Usuario>();
 	private Set<Sensor> sensores = new HashSet<Sensor>();
 	private List<Accion> accionesRealizadas = new ArrayList<Accion>();
@@ -21,6 +22,7 @@ public class Alarma {
 		this.codigoActDesact = codigoActDesact;
 		this.codigoConfiguracion = codigoConfiguracion;
 		this.nombre = nombre;
+		this.activadaDesactivada = Boolean.FALSE;
 	}
 
 	public Integer getIdAlarma() {
@@ -53,6 +55,14 @@ public class Alarma {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+	public Boolean getActivadaDesactivada() {
+		return activadaDesactivada;
+	}
+
+	public void setActivadaDesactivada(Boolean activadaDesactivada) {
+		this.activadaDesactivada = activadaDesactivada;
 	}
 
 	public Set<Usuario> getUsuariosValidos() {
