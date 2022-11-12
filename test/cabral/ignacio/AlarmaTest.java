@@ -3,6 +3,7 @@ package cabral.ignacio;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import cabral.ignacio.enumeradores.TipoOperacion;
 import cabral.ignacio.excepciones.CodigoAlarmaIncorrectoException;
 import cabral.ignacio.excepciones.SensorDuplicadoException;
 import cabral.ignacio.excepciones.SensorNoEncontradoEnAlarmaException;
+import cabral.ignacio.excepciones.UsuarioNoValidoException;
 
 public class AlarmaTest {
 	Integer idAlarma = 320;
@@ -165,48 +167,48 @@ public class AlarmaTest {
 		} catch (CodigoAlarmaIncorrectoException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
-			((Configurador) configurador).agregarSensorAAlarma(alarma, configurador, "qwerty123", sensor1);
+			((Configurador) configurador).agregarSensorAAlarma(alarma, configurador, codigoConfiguracion, sensor1);
 		} catch (SensorDuplicadoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (CodigoAlarmaIncorrectoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		try {
-			((Configurador) configurador).agregarSensorAAlarma(alarma, configurador, "qwerty123", sensor2);
+			((Configurador) configurador).agregarSensorAAlarma(alarma, configurador, codigoConfiguracion, sensor2);
 		} catch (SensorDuplicadoException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (CodigoAlarmaIncorrectoException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		try {
-			((Configurador) configurador).activarSensorDeAlarma(alarma, configurador, codigoActDesact, sensor1);
+			((Configurador) configurador).activarSensorDeAlarma(alarma, configurador, codigoConfiguracion, sensor1);
 		} catch (SensorNoEncontradoEnAlarmaException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (CodigoAlarmaIncorrectoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-//		((Configurador) configurador).activarSensorDeAlarma(alarma, configurador, codigoActDesact, sensor2);
+
+		// el sensor no se activa por lo tanto no se puede activar la alarma
+//		try {
+//			((Configurador) configurador).activarSensorDeAlarma(alarma, configurador, codigoConfiguracion, sensor2);
+//		} catch (SensorNoEncontradoEnAlarmaException e1) {
+//			e1.printStackTrace();
+//		} catch (CodigoAlarmaIncorrectoException e1) {
+//			e1.printStackTrace();
+//		}
 
 		try {
-			((Activador) activador).activarDesactivar(alarma, activador, codigoConfiguracion);
+			((Activador) activador).activarAlarma(alarma, activador, codigoActDesact);
 		} catch (CodigoAlarmaIncorrectoException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UsuarioNoValidoException e) {
 			e.printStackTrace();
 		}
 
-		
-		
 		assertFalse(alarma.getActivadaDesactivada());
 	}
 }

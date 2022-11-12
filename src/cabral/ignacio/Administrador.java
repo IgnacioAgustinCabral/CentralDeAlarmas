@@ -6,6 +6,7 @@ import cabral.ignacio.enumeradores.TipoOperacion;
 import cabral.ignacio.excepciones.CodigoAlarmaIncorrectoException;
 import cabral.ignacio.excepciones.SensorDuplicadoException;
 import cabral.ignacio.excepciones.SensorNoEncontradoEnAlarmaException;
+import cabral.ignacio.excepciones.UsuarioNoValidoException;
 import cabral.ignacio.interfaces.Activable;
 import cabral.ignacio.interfaces.Configurable;
 
@@ -69,7 +70,8 @@ public class Administrador extends Usuario implements Configurable, Activable {
 	}
 
 	@Override
-	public void activarDesactivar(Alarma alarma, Usuario usuario, String codigoConfiguracion) {
+	public void activarAlarma(Alarma alarma, Usuario usuario, String codigoActivacionDesactivacion)
+			throws CodigoAlarmaIncorrectoException,UsuarioNoValidoException {
 		// TODO Auto-generated method stub
 		
 	}
