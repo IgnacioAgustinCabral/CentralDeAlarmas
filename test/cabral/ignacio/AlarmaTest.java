@@ -10,10 +10,12 @@ import java.util.Set;
 import org.junit.Test;
 
 import cabral.ignacio.enumeradores.TipoOperacion;
+import cabral.ignacio.excepciones.AlarmaYaRegistradaException;
 import cabral.ignacio.excepciones.CodigoAlarmaIncorrectoException;
 import cabral.ignacio.excepciones.SensorDuplicadoException;
 import cabral.ignacio.excepciones.SensorNoEncontradoEnAlarmaException;
 import cabral.ignacio.excepciones.UsuarioNoValidoException;
+import cabral.ignacio.excepciones.UsuarioYaRegistradoException;
 
 public class AlarmaTest {
 	Integer idAlarma = 320;
@@ -30,7 +32,11 @@ public class AlarmaTest {
 
 		Alarma alarma = new Alarma(idAlarma, codigoActDesact, codigoConfiguracion, nombre);
 
-		((Administrador) admin).agregarAlarma(central, alarma);
+		try {
+			((Administrador) admin).agregarAlarma(central, alarma);
+		} catch (AlarmaYaRegistradaException e) {
+			e.printStackTrace();
+		}
 
 		assertEquals(1, central.getRegistroDeAlarmas().size());
 	}
@@ -45,8 +51,16 @@ public class AlarmaTest {
 
 		Usuario activador = new Activador(122, "Luis");
 
-		((Administrador) admin).agregarUsuario(central, configurador);
-		((Administrador) admin).agregarUsuario(central, activador);
+		try {
+			((Administrador) admin).agregarUsuario(central, configurador);
+		} catch (UsuarioYaRegistradoException e) {
+			e.printStackTrace();
+		}
+		try {
+			((Administrador) admin).agregarUsuario(central, activador);
+		} catch (UsuarioYaRegistradoException e) {
+			e.printStackTrace();
+		}
 
 		assertEquals(2, central.getRegistroDeUsuarios().size());
 
@@ -65,7 +79,11 @@ public class AlarmaTest {
 
 		Alarma alarma = new Alarma(idAlarma, codigoActDesact, codigoConfiguracion, nombre);
 
-		((Administrador) admin).agregarAlarma(central, alarma);
+		try {
+			((Administrador) admin).agregarAlarma(central, alarma);
+		} catch (AlarmaYaRegistradaException e) {
+			e.printStackTrace();
+		}
 
 		((Administrador) admin).agregarUsuarioAUnaAlarma(alarma, configurador, "qwerty123");
 
