@@ -211,4 +211,71 @@ public class AlarmaTest {
 
 		assertFalse(alarma.getActivadaDesactivada());
 	}
+
+	@Test
+	public void queParaUnaAlarmaDeterminadaSePuedaObtenerUnaColeccionOrdenadaDeAccionesDeTipoConfiguracionOdenadasPorIdDeAccion() {
+
+		Central central = new Central();
+
+		Usuario configurador = new Configurador(456, "Juan");
+
+		Usuario activador = new Activador(122, "Luis");
+
+		Alarma alarma = new Alarma(idAlarma, codigoActDesact, codigoConfiguracion, nombre);
+
+		Integer id = 3333;
+		Sensor sensor1 = new Sensor(id);
+		Sensor sensor2 = new Sensor(id + 1);
+
+		try {
+			((Configurador) configurador).agregarUsuarioAUnaAlarma(alarma, activador, codigoConfiguracion);
+		} catch (CodigoAlarmaIncorrectoException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			((Configurador) configurador).agregarSensorAAlarma(alarma, configurador, codigoConfiguracion, sensor1);
+		} catch (SensorDuplicadoException e) {
+			e.printStackTrace();
+		} catch (CodigoAlarmaIncorrectoException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			((Configurador) configurador).agregarSensorAAlarma(alarma, configurador, codigoConfiguracion, sensor2);
+		} catch (SensorDuplicadoException e1) {
+			e1.printStackTrace();
+		} catch (CodigoAlarmaIncorrectoException e1) {
+			e1.printStackTrace();
+		}
+
+		try {
+			((Configurador) configurador).activarSensorDeAlarma(alarma, configurador, codigoConfiguracion, sensor1);
+		} catch (SensorNoEncontradoEnAlarmaException e) {
+			e.printStackTrace();
+		} catch (CodigoAlarmaIncorrectoException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			((Configurador) configurador).activarSensorDeAlarma(alarma, configurador, codigoConfiguracion, sensor2);
+		} catch (SensorNoEncontradoEnAlarmaException e1) {
+			e1.printStackTrace();
+		} catch (CodigoAlarmaIncorrectoException e1) {
+			e1.printStackTrace();
+		}
+
+		try {
+			((Activador) activador).activarAlarma(alarma, activador, codigoActDesact);
+		} catch (CodigoAlarmaIncorrectoException e) {
+			e.printStackTrace();
+		} catch (UsuarioNoValidoException e) {
+			e.printStackTrace();
+		}
+		
+		for (Accion accion : alarma.getOperacionesDeConfiguracion()) {
+			System.out.println(accion.getId());
+		}
+		
+	}
 }

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import cabral.ignacio.enumeradores.TipoOperacion;
+
 public class Alarma {
 
 	private Integer idAlarma;
@@ -16,6 +18,7 @@ public class Alarma {
 	private Set<Usuario> usuariosValidos = new HashSet<Usuario>();
 	private Set<Sensor> sensores = new HashSet<Sensor>();
 	private List<Accion> accionesRealizadas = new ArrayList<Accion>();
+	private Set<Accion> operacionesConfiguracion = new HashSet<Accion>();
 
 	public Alarma(Integer idAlarma, String codigoActDesact, String codigoConfiguracion, String nombre) {
 		this.idAlarma = idAlarma;
@@ -89,6 +92,14 @@ public class Alarma {
 		this.accionesRealizadas = accionesRealizadas;
 	}
 
+	public Set<Accion> getOperacionesConfiguracion() {
+		return operacionesConfiguracion;
+	}
+
+	public void setOperacionesConfiguracion(Set<Accion> operacionesConfiguracion) {
+		this.operacionesConfiguracion = operacionesConfiguracion;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(idAlarma);
@@ -104,6 +115,17 @@ public class Alarma {
 			return false;
 		Alarma other = (Alarma) obj;
 		return Objects.equals(idAlarma, other.idAlarma);
+	}
+
+	public Set<Accion> getOperacionesDeConfiguracion() {
+		
+		for (Accion accion : this.getAccionesRealizadas()) {
+			
+			if(accion.getOperacion().equals(TipoOperacion.CONFIGURACION)) {
+				this.getOperacionesConfiguracion().add(accion);
+			}
+		}
+		return this.getOperacionesConfiguracion();
 	}
 
 }
